@@ -26,7 +26,7 @@ OE_HOME_EXT="/opt/$OE_USER/$OE_USER-server"
 OE_VERSION="8.0"
 
 #set the superadmin password
-OE_SUPERADMIN="superadminpassword"
+OE_SUPERADMIN="admin"m
 OE_CONFIG="$OE_USER-server"
 
 #--------------------------------------------------
@@ -76,12 +76,16 @@ sudo chown $OE_USER:$OE_USER /var/log/$OE_USER
 #--------------------------------------------------
 # Install ODOO
 #--------------------------------------------------
-echo -e "\n==== Installing ODOO Server ===="
-sudo git clone --branch $OE_VERSION https://www.github.com/odoo/odoo $OE_HOME_EXT/
-
 echo -e "\n---- Create custom module directory ----"
+
+
+echo -e "\n==== Installing ODOO Server ===="
+sudo git clone --branch $OE_VERSION --depth 1 --single-branch https://www.github.com/odoo/odoo $OE_HOME_EXT/
 sudo su $OE_USER -c "mkdir $OE_HOME/custom"
 sudo su $OE_USER -c "mkdir $OE_HOME/custom/addons"
+sudo git clone --branch master https://github.com/bizzappdev/oerp_no_phoning_home $OE_HOME/custom/addons/
+
+
 
 echo -e "\n---- Setting permissions on home folder ----"
 sudo chown -R $OE_USER:$OE_USER $OE_HOME/*
@@ -183,9 +187,13 @@ sudo mv ~/$OE_CONFIG /etc/init.d/$OE_CONFIG
 sudo chmod 755 /etc/init.d/$OE_CONFIG
 sudo chown root: /etc/init.d/$OE_CONFIG
 
+
+
 echo -e "* Start ODOO on Startup"
 sudo update-rc.d $OE_CONFIG defaults
- 
+
+
+
 sudo service $OE_CONFIG start
 echo "Done! The ODOO server can be started with: service $OE_CONFIG start"
 
